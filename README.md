@@ -1,1 +1,4 @@
 # poller_bear
+
+
+TOR BABA BOKACHODA KHANKIR CHELE
