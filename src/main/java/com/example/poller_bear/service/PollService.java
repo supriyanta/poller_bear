@@ -1,18 +1,12 @@
 package com.example.poller_bear.service;
 
-import com.example.poller_bear.dto.PagedResponse;
-import com.example.poller_bear.dto.PollResponse;
-import com.example.poller_bear.dto.UserSummary;
+import com.example.poller_bear.dto.*;
 import com.example.poller_bear.exception.ResourceNotFoundException;
-import com.example.poller_bear.model.AccountUser;
-import com.example.poller_bear.model.ChoiceVoteCount;
-import com.example.poller_bear.model.Poll;
-import com.example.poller_bear.model.Vote;
+import com.example.poller_bear.model.*;
 import com.example.poller_bear.repository.PollRepository;
 import com.example.poller_bear.repository.UserRepository;
 import com.example.poller_bear.repository.VoteRepository;
 import com.example.poller_bear.security.AccountUserDetails;
-import com.example.poller_bear.security.AuthenticatedUser;
 import com.example.poller_bear.util.ModelResponseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +34,13 @@ public class PollService {
     @Autowired
     UserRepository userRepository;
 
+    /**
+     * Getting paginated response of polls for user
+     * @param user
+     * @param page
+     * @param size
+     * @return
+     */
     public PagedResponse<?> getAllPolls(AccountUserDetails user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
         Page<Poll> polls = pollRepository.findAll(pageable);
@@ -69,6 +73,12 @@ public class PollService {
                 polls.getTotalElements(), polls.getTotalPages(), polls.isLast());
     }
 
+    /**
+     * retrieving single poll by poll id
+     * @param user
+     * @param pollId
+     * @return
+     */
     public PollResponse getPollById(AccountUserDetails user, Long pollId) {
         Poll poll = pollRepository.findById(pollId)
                 .orElseThrow(() -> new ResourceNotFoundException());
@@ -91,6 +101,54 @@ public class PollService {
                 creator,
                 currentUserSelectedChoiceForThisPoll
         );
+    }
+
+
+    /**
+     * Creating poll for current user
+     * @param user
+     * @param pollRequest
+     * @return PollResponse
+     */
+    public PollResponse createPollByCurrentUser(AccountUserDetails user, PollRequest pollRequest) {
+        Poll poll = new Poll();
+
+        poll.setTopic(pollRequest.getTopic());
+
+        List<Choice> choices = pollRequest.getChoices()
+                .stream()
+                .map(choiceRequest -> {
+                    Choice choice = new Choice();
+                    choice.setText(choiceRequest.getText());
+                    return choice;
+                })
+                .collect(Collectors.toList());
+        poll.setChoices(choices);
+
+        PollDuration duration = pollRequest.getDuration();
+        Instant now = Instant.now();
+        Instant expirationTime = now.plus(Duration.ofDays(duration.getDays()))
+                                    .plus(Duration.ofHours(duration.getHours()));
+        poll.setExpirationTime(expirationTime);
+
+        Poll newPoll = pollRepository.save(poll);
+
+        List<ChoiceResponse> choiceResponses = choices
+                .stream()
+                .map(choice -> new ChoiceResponse(choice.getId(), choice.getText(), 0L))
+                .collect(Collectors.toList());
+
+        UserSummary creator = new UserSummary(user.getId(), user.getName(), user.getUsername());
+        return new PollResponse(
+                newPoll.getId(),
+                newPoll.getTopic(),
+                choiceResponses,
+                newPoll.getCreatedAt(),
+                newPoll.getExpirationTime(),
+                false,
+                creator,
+                null,
+                0L);
     }
 
 
