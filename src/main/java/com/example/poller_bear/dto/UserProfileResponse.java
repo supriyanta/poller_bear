@@ -16,6 +16,9 @@ public class UserProfileResponse {
     private Long pollCount;
     private Long voteCount;
 
+    public UserProfileResponse() {
+    }
+
     public UserProfileResponse(Long id, String name, String username, Instant joinedAt, Long pollCount, Long voteCount) {
         this.id = id;
         this.name = name;

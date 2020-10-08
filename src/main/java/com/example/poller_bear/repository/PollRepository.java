@@ -11,4 +11,5 @@ public interface PollRepository extends JpaRepository<Poll, Long> {
 
     Optional<Poll> findById(Long pollId);
 
+    long countByCreatedBy(Long userId);
 }
