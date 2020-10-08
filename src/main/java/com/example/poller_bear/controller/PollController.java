@@ -54,11 +54,12 @@ public class PollController {
     }
 
     @PostMapping("/{pollId}/vote")
-    public ResponseDto castVoteForPoll(@AuthenticatedUser AccountUserDetails user,
+    public ResponseDto<?> castVoteForPoll(@AuthenticatedUser AccountUserDetails user,
                                        @PathVariable("pollId") Long pollId,
                                        @Valid @RequestBody VoteRequest voteRequest) {
 
-        return null;
+        PollResponse pollResponse = pollService.castVoteForPollAndGetUpdatedPoll(user, pollId, voteRequest);
+        return new ResponseDto<>(HttpStatus.ACCEPTED, "success", pollResponse);
     }
 
 }

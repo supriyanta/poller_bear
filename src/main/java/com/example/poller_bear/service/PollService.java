@@ -1,6 +1,7 @@
 package com.example.poller_bear.service;
 
 import com.example.poller_bear.dto.*;
+import com.example.poller_bear.exception.BadRequestException;
 import com.example.poller_bear.exception.ResourceNotFoundException;
 import com.example.poller_bear.model.*;
 import com.example.poller_bear.repository.PollRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -211,5 +213,56 @@ public class PollService {
                 .stream()
                 .collect(Collectors.toMap(ChoiceVoteCount::getChoiceId, ChoiceVoteCount::getVoteCount));
         return choiceToVoteCount;
+    }
+
+    @Transactional
+    public PollResponse castVoteForPollAndGetUpdatedPoll(AccountUserDetails voterDetails,
+                                                         Long pollId,
+                                                         VoteRequest voteRequest) {
+
+        Poll poll = pollRepository.findById(pollId)
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        // Check expiration
+        if(poll.getExpirationTime().isBefore(Instant.now())) {
+            throw new BadRequestException();
+        }
+
+        Choice selectedChoice = poll.getChoices()
+                .stream()
+                .filter(choice -> choice.getId().equals(voteRequest.getChoiceId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        AccountUser voter = userRepository.findById(voterDetails.getId())
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        Vote vote = new Vote();
+
+        vote.setPoll(poll);
+        vote.setChoice(selectedChoice);
+        vote.setUser(voter);
+
+        try {
+            voteRepository.save(vote);
+        } catch (Exception exception) {
+            throw new BadRequestException();
+        }
+
+        // send updated poll response
+
+        AccountUser pollCreator = userRepository.findById(poll.getCreatedBy())
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        Map<Long, Long> choiceToVoteCountMap = getChoiceToVoteCountMap(Collections.singletonList(poll.getId()));
+
+        PollResponse pollResponse = ModelResponseMapper.mapPollToPollResponse(
+                poll,
+                choiceToVoteCountMap,
+                pollCreator,
+                selectedChoice.getId()
+        );
+
+        return pollResponse;
     }
 }
