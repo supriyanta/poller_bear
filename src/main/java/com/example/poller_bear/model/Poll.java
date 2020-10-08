@@ -1,5 +1,6 @@
 package com.example.poller_bear.model;
 
+import com.example.poller_bear.model.Audit.UserDateAuditModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -18,7 +19,7 @@ import java.util.List;
 @Table(name = "polls")
 @Setter
 @Getter
-public class Poll {
+public class Poll extends UserDateAuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,7 @@ public class Poll {
     @Size(max = 150)
     private String topic;
 
-    @OneToMany(mappedBy = "choices",
+    @OneToMany(mappedBy = "poll",
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true

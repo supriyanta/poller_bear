@@ -1,4 +1,4 @@
-package com.example.poller_bear.model;
+package com.example.poller_bear.model.Audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import java.time.Instant;
 )
 @Getter
 @Setter
-public abstract class AuditModel implements Serializable {
+public abstract class DateAuditModel implements Serializable {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

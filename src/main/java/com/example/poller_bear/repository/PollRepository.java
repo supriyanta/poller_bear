@@ -11,5 +11,4 @@ public interface PollRepository extends JpaRepository<Poll, Long> {
 
     Optional<Poll> findById(Long pollId);
 
-
 }

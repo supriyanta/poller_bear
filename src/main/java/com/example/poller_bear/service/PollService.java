@@ -115,15 +115,22 @@ public class PollService {
 
         poll.setTopic(pollRequest.getTopic());
 
-        List<Choice> choices = pollRequest.getChoices()
-                .stream()
-                .map(choiceRequest -> {
-                    Choice choice = new Choice();
-                    choice.setText(choiceRequest.getText());
-                    return choice;
-                })
-                .collect(Collectors.toList());
-        poll.setChoices(choices);
+//        List<Choice> choices = pollRequest.getChoices()
+//                .stream()
+//                .map(choiceRequest -> {
+//                    Choice choice = new Choice();
+//                    choice.setText(choiceRequest.getText());
+//                    return choice;
+//                })
+//                .collect(Collectors.toList());
+//        poll.setChoices(choices);
+
+        pollRequest.getChoices()
+                .forEach(choiceRequest -> {
+                    Choice choice = new Choice(choiceRequest.getText());
+                    choice.setPoll(poll);
+                    poll.getChoices().add(choice);
+                });
 
         PollDuration duration = pollRequest.getDuration();
         Instant now = Instant.now();
@@ -131,9 +138,10 @@ public class PollService {
                                     .plus(Duration.ofHours(duration.getHours()));
         poll.setExpirationTime(expirationTime);
 
+
         Poll newPoll = pollRepository.save(poll);
 
-        List<ChoiceResponse> choiceResponses = choices
+        List<ChoiceResponse> choiceResponses = poll.getChoices()
                 .stream()
                 .map(choice -> new ChoiceResponse(choice.getId(), choice.getText(), 0L))
                 .collect(Collectors.toList());

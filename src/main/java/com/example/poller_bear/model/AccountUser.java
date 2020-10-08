@@ -1,5 +1,6 @@
 package com.example.poller_bear.model;
 
+import com.example.poller_bear.model.Audit.DateAuditModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
-public class AccountUser extends AuditModel {
+public class AccountUser extends DateAuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
