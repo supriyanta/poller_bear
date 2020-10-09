@@ -16,17 +16,24 @@ import java.util.stream.Collectors;
 @Setter
 public class AccountUserDetails implements UserDetails {
 
+    public Collection<? extends GrantedAuthority> authorities;
     private Long id;
-
     private String name;
-
     private String username;
-
     private String email;
-
     private String password;
 
-    public Collection<? extends GrantedAuthority> authorities;
+    public AccountUserDetails() {
+    }
+
+    public AccountUserDetails(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
 
     public static AccountUserDetails build(AccountUser user) {
         AccountUserDetails userDetails = new AccountUserDetails();
@@ -43,18 +50,6 @@ public class AccountUserDetails implements UserDetails {
 
         userDetails.setAuthorities(authorities);
         return userDetails;
-    }
-
-    public AccountUserDetails() {
-    }
-
-    public AccountUserDetails(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
     }
 
     @Override

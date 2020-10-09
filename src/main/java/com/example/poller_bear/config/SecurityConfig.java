@@ -4,7 +4,6 @@ package com.example.poller_bear.config;
 import com.example.poller_bear.security.JwtAuthenticationEntryPoint;
 import com.example.poller_bear.security.JwtAuthenticationFilter;
 import com.example.poller_bear.service.AccountUserDetailsService;
-import com.example.poller_bear.service.AccountUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +12,12 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
@@ -31,16 +28,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public JwtAuthenticationFilter authenticationFilter() {
-        return new JwtAuthenticationFilter();
-    };
-
     @Autowired
     public JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Autowired
     public AccountUserDetailsService userDetailsService;
+
+    @Bean
+    public JwtAuthenticationFilter authenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -64,24 +61,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .cors().and().csrf()
-                    .disable()
+                .disable()
                 .exceptionHandling()
-                    .authenticationEntryPoint(unauthorizedHandler)
+                .authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/", "/**/*.js", "/**/*.css", "/**/*.html")
-                        .permitAll()
-                    .antMatchers("/documentation/**")
-                        .permitAll()
-                    .antMatchers("/api/auth/**")
-                        .permitAll()
-                    .antMatchers("/api/user/availability")
-                        .permitAll()
-                    .anyRequest()
-                        .authenticated();
+                .antMatchers("/", "/**/*.js", "/**/*.css", "/**/*.html")
+                .permitAll()
+                .antMatchers("/documentation/**")
+                .permitAll()
+                .antMatchers("/api/auth/**")
+                .permitAll()
+                .antMatchers("/api/user/availability")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
 
         http.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

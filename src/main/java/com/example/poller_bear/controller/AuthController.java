@@ -1,8 +1,8 @@
 package com.example.poller_bear.controller;
 
 import com.example.poller_bear.dto.*;
-import com.example.poller_bear.exception.InternalException;
 import com.example.poller_bear.exception.BadRequestException;
+import com.example.poller_bear.exception.InternalException;
 import com.example.poller_bear.model.AccountUser;
 import com.example.poller_bear.model.Role;
 import com.example.poller_bear.model.Rolename;
@@ -17,7 +17,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -46,24 +49,24 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseDto<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        if(accountUserService.isUsernameExists(signupRequest.getUsername()) ) {
+        if (accountUserService.isUsernameExists(signupRequest.getUsername())) {
             String message = String.format("user with username: %s already exist", signupRequest.getUsername());
             throw new BadRequestException(message);
         }
 
-        if(accountUserService.isEmailExists(signupRequest.getEmail())) {
+        if (accountUserService.isEmailExists(signupRequest.getEmail())) {
             String message = String.format("user with email: %s already exist", signupRequest.getEmail());
             throw new BadRequestException(message);
         }
 
         AccountUser newUser = new AccountUser(signupRequest.getName(),
-                                signupRequest.getUsername(),
-                                signupRequest.getEmail(),
-                                passwordEncoder.encode(signupRequest.getPassword())
-                            );
+                signupRequest.getUsername(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword())
+        );
 
         Role role = roleRepository.findByName(Rolename.ROLE_USER)
-                        .orElseThrow(() -> new InternalException("role creation failed"));
+                .orElseThrow(() -> new InternalException("role creation failed"));
 
         newUser.setRoles(Collections.singleton(role));
 
@@ -75,9 +78,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseDto<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                                                loginRequest.getEmailOrUsername(),
-                                                                loginRequest.getPassword()
-                                                            );
+                loginRequest.getEmailOrUsername(),
+                loginRequest.getPassword()
+        );
         Authentication auth = authenticationManager.authenticate(authentication);
 
         SecurityContextHolder.getContext().setAuthentication(auth);

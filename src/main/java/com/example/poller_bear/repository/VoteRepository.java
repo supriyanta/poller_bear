@@ -1,8 +1,6 @@
 package com.example.poller_bear.repository;
 
-import com.example.poller_bear.model.Choice;
 import com.example.poller_bear.model.ChoiceVoteCount;
-import com.example.poller_bear.model.Poll;
 import com.example.poller_bear.model.Vote;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, Long> {
@@ -30,6 +27,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     @Query("SELECT v FROM Vote v WHERE v.user.id = :userId AND v.poll.id IN :pollIds")
     List<Vote> findByUserIdAndPollIdIn(@Param("pollIds") List<Long> pollIds,
                                        @Param("userId") Long userId);
+
     @Query("SELECT COUNT(v) FROM Vote v WHERE v.user.id = :userId")
     long countByUserId(@Param("userId") Long userId);
 

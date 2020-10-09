@@ -1,11 +1,9 @@
 package com.example.poller_bear.security;
 
 import com.example.poller_bear.service.AccountUserDetailsService;
-import com.example.poller_bear.service.AccountUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -34,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
 
-            if(StringUtils.hasText(jwtToken) && jwtUtil.validate(jwtToken)) {
+            if (StringUtils.hasText(jwtToken) && jwtUtil.validate(jwtToken)) {
 
                 Long userId = jwtUtil.extractUserId(jwtToken);
 
@@ -47,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
                 authentication.setDetails(new WebAuthenticationDetailsSource()
-                                                .buildDetails(httpServletRequest));
+                        .buildDetails(httpServletRequest));
 
                 SecurityContext context = SecurityContextHolder.getContext();
                 context.setAuthentication(authentication);
@@ -62,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractTokenFromRequest(HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader("Authorization");
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             String token = bearerToken.substring(7);
             return token;
         } else {

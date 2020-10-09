@@ -1,11 +1,9 @@
 package com.example.poller_bear.exceptionHandler;
 
 import com.example.poller_bear.dto.ErrorResponseDto;
-import com.example.poller_bear.exception.InternalException;
 import com.example.poller_bear.exception.BadRequestException;
+import com.example.poller_bear.exception.InternalException;
 import com.example.poller_bear.exception.ResourceNotFoundException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

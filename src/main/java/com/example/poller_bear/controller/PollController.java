@@ -7,11 +7,9 @@ import com.example.poller_bear.security.AuthenticatedUser;
 import com.example.poller_bear.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/poll")
@@ -38,7 +36,7 @@ public class PollController {
 
     @GetMapping("/{pollId}")
     public ResponseDto<?> getPollById(@AuthenticatedUser AccountUserDetails user,
-                                   @PathVariable("pollId") Long pollId) {
+                                      @PathVariable("pollId") Long pollId) {
 
         PollResponse pollResponse = pollService.getPollById(user, pollId);
         return new ResponseDto<>(HttpStatus.OK, "success", pollResponse);
@@ -46,7 +44,7 @@ public class PollController {
 
     @PostMapping
     public ResponseDto<?> createPoll(@AuthenticatedUser AccountUserDetails user,
-                                  @Valid @RequestBody PollRequest pollRequest) {
+                                     @Valid @RequestBody PollRequest pollRequest) {
 
 
         PollResponse pollResponse = pollService.createPollByCurrentUser(user, pollRequest);
@@ -55,8 +53,8 @@ public class PollController {
 
     @PostMapping("/{pollId}/vote")
     public ResponseDto<?> castVoteForPoll(@AuthenticatedUser AccountUserDetails user,
-                                       @PathVariable("pollId") Long pollId,
-                                       @Valid @RequestBody VoteRequest voteRequest) {
+                                          @PathVariable("pollId") Long pollId,
+                                          @Valid @RequestBody VoteRequest voteRequest) {
 
         PollResponse pollResponse = pollService.castVoteForPollAndGetUpdatedPoll(user, pollId, voteRequest);
         return new ResponseDto<>(HttpStatus.ACCEPTED, "success", pollResponse);

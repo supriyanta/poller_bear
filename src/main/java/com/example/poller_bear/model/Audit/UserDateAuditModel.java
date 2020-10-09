@@ -7,11 +7,10 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.persistence.MappedSuperclass;
-import java.time.Instant;
 
 @MappedSuperclass
 @JsonIgnoreProperties(
-        value = { "createdBy", "updatedBy" },
+        value = {"createdBy", "updatedBy"},
         allowGetters = true
 )
 @Setter

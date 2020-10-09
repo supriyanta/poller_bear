@@ -19,8 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class PollService {
 
     /**
      * Getting paginated response of polls for user
+     *
      * @param user
      * @param page
      * @param size
@@ -47,7 +49,7 @@ public class PollService {
         Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
         Page<Poll> polls = pollRepository.findAll(pageable);
 
-        if(polls.getNumberOfElements() == 0) {
+        if (polls.getNumberOfElements() == 0) {
             return new PagedResponse<>(Collections.emptyList(), polls.getNumber(), polls.getSize(),
                     polls.getTotalElements(), polls.getTotalPages(), polls.isLast());
         }
@@ -68,7 +70,7 @@ public class PollService {
                     choiceToVoteCountMap,
                     creator,
                     currentUserSelectedChoiceForThisPoll
-                    );
+            );
         }).getContent();
 
         return new PagedResponse<>(pollResponses, polls.getNumber(), polls.getSize(),
@@ -77,6 +79,7 @@ public class PollService {
 
     /**
      * retrieving single poll by poll id
+     *
      * @param user
      * @param pollId
      * @return
@@ -90,11 +93,11 @@ public class PollService {
         AccountUser creator = userRepository.findById(poll.getCreatedBy()).orElse(null);
 
         Vote voteByCurrentUserForThisPoll = user != null ?
-                                        voteRepository.findByUserIdAndPollId(pollId, user.getId())
-                                        : null;
+                voteRepository.findByUserIdAndPollId(pollId, user.getId())
+                : null;
         Long currentUserSelectedChoiceForThisPoll = voteByCurrentUserForThisPoll != null ?
-                                            voteByCurrentUserForThisPoll.getChoice().getId()
-                                            : null;
+                voteByCurrentUserForThisPoll.getChoice().getId()
+                : null;
 
         return ModelResponseMapper.mapPollToPollResponse(
                 poll,
@@ -107,6 +110,7 @@ public class PollService {
 
     /**
      * Creating poll for current user
+     *
      * @param user
      * @param pollRequest
      * @return PollResponse
@@ -136,7 +140,7 @@ public class PollService {
         PollDuration duration = pollRequest.getDuration();
         Instant now = Instant.now();
         Instant expirationTime = now.plus(Duration.ofDays(duration.getDays()))
-                                    .plus(Duration.ofHours(duration.getHours()));
+                .plus(Duration.ofHours(duration.getHours()));
         poll.setExpirationTime(expirationTime);
 
 
@@ -163,6 +167,7 @@ public class PollService {
 
     /**
      * returns User of the creator of the polls Map<poll id, user>
+     *
      * @param polls
      * @return Map<Long, AccountUser>
      */
@@ -182,7 +187,8 @@ public class PollService {
 
     /**
      * returns Map<poll id, choice id> which tells
-     *      current user chose which choice of the poll of poll id
+     * current user chose which choice of the poll of poll id
+     *
      * @param pollIds
      * @param userId
      * @return Map<Long, Long>
@@ -190,7 +196,7 @@ public class PollService {
     private Map<Long, Long> getVotesByUserMap(List<Long> pollIds, Long userId) {
         List<Vote> votesByUser = voteRepository.findByUserIdAndPollIdIn(pollIds, userId);
 
-        if(votesByUser == null || votesByUser.size() == 0) return null;
+        if (votesByUser == null || votesByUser.size() == 0) return null;
 
         Map<Long, Long> votesByUserMap = votesByUser
                 .stream()
@@ -202,7 +208,8 @@ public class PollService {
 
     /**
      * returns Map<choice id, vote count> which tells
-     *      which choice got how many votes
+     * which choice got how many votes
+     *
      * @param pollIds
      * @return Map<Long, Long>
      */
@@ -223,7 +230,7 @@ public class PollService {
                 .orElseThrow(() -> new ResourceNotFoundException("poll", "poll id", pollId));
 
         // Check expiration
-        if(poll.getExpirationTime().isBefore(Instant.now())) {
+        if (poll.getExpirationTime().isBefore(Instant.now())) {
             throw new BadRequestException("This poll is expired");
         }
 

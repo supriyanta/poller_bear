@@ -1,7 +1,6 @@
 package com.example.poller_bear.model;
 
 import com.example.poller_bear.model.Audit.DateAuditModel;
-import com.example.poller_bear.model.Audit.UserDateAuditModel;
 import lombok.Getter;
 import lombok.Setter;
 
