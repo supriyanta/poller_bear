@@ -1,7 +1,7 @@
 package com.example.poller_bear.controller;
 
 import com.example.poller_bear.dto.*;
-import com.example.poller_bear.exception.ApiException;
+import com.example.poller_bear.exception.InternalException;
 import com.example.poller_bear.exception.BadRequestException;
 import com.example.poller_bear.model.AccountUser;
 import com.example.poller_bear.model.Role;
@@ -12,7 +12,6 @@ import com.example.poller_bear.security.JwtUtil;
 import com.example.poller_bear.service.AccountUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,9 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -66,7 +63,7 @@ public class AuthController {
                             );
 
         Role role = roleRepository.findByName(Rolename.ROLE_USER)
-                        .orElseThrow(() -> new ApiException("role creation failed"));
+                        .orElseThrow(() -> new InternalException("role creation failed"));
 
         newUser.setRoles(Collections.singleton(role));
 

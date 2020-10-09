@@ -8,21 +8,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 @Setter
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class ApiException extends RuntimeException {
+public class InternalException extends RuntimeException {
 
-    public ApiException(String message) {
+    public InternalException(String message) {
         super(message);
     }
 
-    public ApiException(String message, Throwable cause) {
+    public InternalException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ApiException(Throwable cause) {
+    public InternalException(Throwable cause) {
         super(cause);
     }
 
-    public ApiException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public InternalException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
