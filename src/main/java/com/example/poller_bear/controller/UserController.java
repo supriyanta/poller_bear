@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseDto<?> getUserProfileByUsername(@PathVariable("username") String username) {
         AccountUser user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException());
+                .orElseThrow(() -> new ResourceNotFoundException("user", "username", username));
 
         UserProfileResponse userProfileResponse = new UserProfileResponse();
 

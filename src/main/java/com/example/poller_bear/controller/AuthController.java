@@ -1,6 +1,8 @@
 package com.example.poller_bear.controller;
 
 import com.example.poller_bear.dto.*;
+import com.example.poller_bear.exception.ApiException;
+import com.example.poller_bear.exception.BadRequestException;
 import com.example.poller_bear.model.AccountUser;
 import com.example.poller_bear.model.Role;
 import com.example.poller_bear.model.Rolename;
@@ -48,11 +50,13 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseDto<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
         if(accountUserService.isUsernameExists(signupRequest.getUsername()) ) {
-            // TODO: send exception
+            String message = String.format("user with username: %s already exist", signupRequest.getUsername());
+            throw new BadRequestException(message);
         }
 
         if(accountUserService.isEmailExists(signupRequest.getEmail())) {
-            // TODO: send Exception
+            String message = String.format("user with email: %s already exist", signupRequest.getEmail());
+            throw new BadRequestException(message);
         }
 
         AccountUser newUser = new AccountUser(signupRequest.getName(),
@@ -61,9 +65,8 @@ public class AuthController {
                                 passwordEncoder.encode(signupRequest.getPassword())
                             );
 
-        // TODO : Set user Role send EXCEPTION
         Role role = roleRepository.findByName(Rolename.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("role creation failed"));
+                        .orElseThrow(() -> new ApiException("role creation failed"));
 
         newUser.setRoles(Collections.singleton(role));
 

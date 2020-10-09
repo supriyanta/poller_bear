@@ -30,7 +30,7 @@ public class AvailabilityController {
                                                     @RequestParam(value = "email", defaultValue = "") String email) {
 
         if(username.equals("") && email.equals("")) {
-            throw new BadRequestException();
+            throw new BadRequestException("username or email not found");
         }
 
         Boolean usernameAvailable = null;

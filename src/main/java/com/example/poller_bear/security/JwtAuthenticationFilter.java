@@ -2,6 +2,7 @@ package com.example.poller_bear.security;
 
 import com.example.poller_bear.service.AccountUserDetailsService;
 import com.example.poller_bear.service.AccountUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -52,8 +53,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 context.setAuthentication(authentication);
             }
         } catch (Exception exception) {
-            // TODO : log
             System.out.println(exception);
+            log.error(exception.getMessage());
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);

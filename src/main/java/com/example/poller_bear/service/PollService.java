@@ -83,8 +83,7 @@ public class PollService {
      */
     public PollResponse getPollById(AccountUserDetails user, Long pollId) {
         Poll poll = pollRepository.findById(pollId)
-                .orElseThrow(() -> new ResourceNotFoundException());
-        // TODO : fill ResourceNotFound Exception constructor arguments
+                .orElseThrow(() -> new ResourceNotFoundException("poll", "poll id", pollId));
 
         Map<Long, Long> choiceToVoteCountMap = getChoiceToVoteCountMap(Collections.singletonList(pollId));
 
@@ -221,21 +220,21 @@ public class PollService {
                                                          VoteRequest voteRequest) {
 
         Poll poll = pollRepository.findById(pollId)
-                .orElseThrow(() -> new ResourceNotFoundException());
+                .orElseThrow(() -> new ResourceNotFoundException("poll", "poll id", pollId));
 
         // Check expiration
         if(poll.getExpirationTime().isBefore(Instant.now())) {
-            throw new BadRequestException();
+            throw new BadRequestException("This poll is expired");
         }
 
         Choice selectedChoice = poll.getChoices()
                 .stream()
                 .filter(choice -> choice.getId().equals(voteRequest.getChoiceId()))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException());
+                .orElseThrow(() -> new ResourceNotFoundException("choice", "choice id", voteRequest.getChoiceId()));
 
         AccountUser voter = userRepository.findById(voterDetails.getId())
-                .orElseThrow(() -> new ResourceNotFoundException());
+                .orElseThrow(() -> new ResourceNotFoundException("user", "user id", voterDetails.getId()));
 
         Vote vote = new Vote();
 
@@ -246,13 +245,13 @@ public class PollService {
         try {
             voteRepository.save(vote);
         } catch (Exception exception) {
-            throw new BadRequestException();
+            throw new BadRequestException("user already casted vote for this poll");
         }
 
         // send updated poll response
 
         AccountUser pollCreator = userRepository.findById(poll.getCreatedBy())
-                .orElseThrow(() -> new ResourceNotFoundException());
+                .orElseThrow(() -> new BadRequestException("Creator of the poll not found"));
 
         Map<Long, Long> choiceToVoteCountMap = getChoiceToVoteCountMap(Collections.singletonList(poll.getId()));
 

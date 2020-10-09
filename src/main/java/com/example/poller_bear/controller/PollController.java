@@ -20,12 +20,12 @@ public class PollController {
     @Autowired
     PollService pollService;
 
-    // TODO : delete after test
-    @Secured("ROLE_USER")
-    @GetMapping("/check")
-    public String check() {
-        return "Checked";
-    }
+//    // delete after test
+//    @Secured("ROLE_USER")
+//    @GetMapping("/check")
+//    public String check() {
+//        return "Checked";
+//    }
 
     @GetMapping
     public ResponseDto<?> getAllPolls(@AuthenticatedUser AccountUserDetails user,
