@@ -46,7 +46,7 @@
 ## Api Documentation
 
 <a name="authentication"></a>
-####Authentication
+#### Authentication
 
 - **Signup** `POST /api/signup`
 
@@ -75,7 +75,7 @@
     - returns `Authentication Token`
 
 <a name="poll"></a>
-####Poll
+#### Poll
 
 - **All Polls** `GET /api/poll`
 
