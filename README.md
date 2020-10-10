@@ -1,5 +1,12 @@
 # Poller Bear
 
+Backend of a Polling app where a user can create poll, vote for polls, user can see his/her poll feed and user profile which provides history of the created polls and voted polls by that user.
+
+## Technology used
+
+- Spring Boot
+- MySQL
+
 ## Table of Contents
 
 - [Setup](#setup)
