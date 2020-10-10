@@ -7,12 +7,14 @@
 
   - [Authentication](#authentication)
   - [Poll](#poll)
+  - [User](#user)
+  - [Availability](#availability)
 
 <a name="setup"></a>
 
 ## Setup
 
-- Change properties from `appication.properties`
+- Change properties in `appication.properties`
 
   ```properties
   spring.datasource.url=jdbc:mysql://localhost:3306/<database name>
@@ -46,13 +48,14 @@
 ## Api Documentation
 
 <a name="authentication"></a>
-####Authentication
+
+#### Authentication
 
 - **Signup** `POST /api/signup`
 
   - Request body
 
-    ```json
+    ```javascript
     {
         "name": <email or username>,
         "username": <username>,
@@ -72,16 +75,17 @@
     }
     ```
 
-    - returns `Authentication Token`
+  - returns `Authentication Token`
 
 <a name="poll"></a>
-####Poll
+
+#### Poll
 
 - **All Polls** `GET /api/poll`
 
   - returns Paginated response of all polls
 
-- **Create Poll** `POST /api/login`
+- **Create Poll** `POST /api/poll`
 
   - Request body
 
@@ -99,3 +103,38 @@
         }
     }
     ```
+
+- **Get Poll by id** `GET /api/poll/{pollId}`
+
+  - returns single Poll response of id: pollId
+
+- **Cast vote for a Poll** `POST /api/poll/{pollId}/vote
+  - Request body
+    ```json
+    {
+      "choiceId": <choice id>
+    }
+    ```
+  * retuns updated Poll response
+
+<a name="user"></a>
+
+#### User
+
+- **Get User Profile** `GET /api/user/{username}`
+
+  - returns User Profile of user with given username
+
+<a name="availability"></a>
+
+#### Availability
+
+- **Get Availability of username and email** `GET /api/user/availability`
+
+  - Request params
+    ```bash
+      username=<username>
+      email=<email>
+    ```
+
+  * returns username or email already exists or not
