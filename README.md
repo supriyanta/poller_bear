@@ -48,10 +48,7 @@
 ## Api Documentation
 
 <a name="authentication"></a>
-<<<<<<< HEAD
 
-=======
->>>>>>> cb7d5fd7e804446f412a0d0a25a5ec9ef664f09d
 #### Authentication
 
 - **Signup** `POST /api/signup`
@@ -81,10 +78,7 @@
   - returns `Authentication Token`
 
 <a name="poll"></a>
-<<<<<<< HEAD
 
-=======
->>>>>>> cb7d5fd7e804446f412a0d0a25a5ec9ef664f09d
 #### Poll
 
 - **All Polls** `GET /api/poll`
