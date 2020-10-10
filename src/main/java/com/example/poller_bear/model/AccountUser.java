@@ -12,35 +12,40 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
 public class AccountUser extends DateAuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(max = 30)@NotBlank
     @Size(max = 30)
     @NotBlank
     private String name;
 
+    @Size(max = 15)@NotBlank
     @Size(max = 15)
     @NotBlank
     @Column(unique = true)
     private String username;
 
+    @Email@NotBlank@Size(max = 45)
     @Email
     @NotBlank
     @Size(max = 45)
     @Column(unique = true)
     private String email;
 
+    @NotBlank@Size(max = 60)
     @NotBlank
     @Size(max = 60)
     private String password;
 
+    @NotNull
     @NotNull
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -57,4 +62,5 @@ public class AccountUser extends DateAuditModel {
         this.email = email;
         this.password = password;
     }
+
 }

@@ -38,7 +38,7 @@ public class PollService {
     UserRepository userRepository;
 
     /**
-     * Getting paginated response of polls for user
+     * Getting paginated response of polls for user's poll feed
      *
      * @param user
      * @param page
@@ -162,6 +162,122 @@ public class PollService {
                 creator,
                 null,
                 0L);
+    }
+
+    /**
+     * Getting paginated response of polls created by user with particular username
+     *
+     * @param username
+     * @param authUser
+     * @param page
+     * @param size
+     * @return
+     */
+    public PagedResponse<?> getAllPollsCreatedByUser(String username,
+                                                     AccountUserDetails authUser,
+                                                     int page,
+                                                     int size) {
+
+        AccountUser creator = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("user", "username", username));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+        Page<Poll> pagedPoll = pollRepository.findByCreatedBy(creator.getId(), pageable);
+
+        if (pagedPoll.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(),
+                    pagedPoll.getNumber(), pagedPoll.getSize(),
+                    pagedPoll.getTotalElements(), pagedPoll.getTotalPages(),
+                    pagedPoll.isLast());
+        }
+
+        List<Long> pollIds = pagedPoll
+                                .map(Poll::getId)
+                                .getContent();
+
+        Map<Long, Long> choiceVoteCountMap = getChoiceToVoteCountMap(pollIds);
+        Map<Long, Long> votesByUserMap = getVotesByUserMap(pollIds, authUser.getId());
+
+        List<PollResponse> pollResponses = pagedPoll
+                .map(poll -> {
+                    Long currentUserSelectedChoiceForThisPoll = votesByUserMap
+                            .getOrDefault(poll.getId(), null);
+
+                    return ModelResponseMapper.mapPollToPollResponse(
+                            poll,
+                            choiceVoteCountMap,
+                            creator,
+                            currentUserSelectedChoiceForThisPoll
+                    );
+                }).getContent();
+
+        return new PagedResponse<>(
+                pollResponses,
+                pagedPoll.getNumber(),
+                pagedPoll.getSize(),
+                pagedPoll.getTotalElements(),
+                pagedPoll.getTotalPages(),
+                pagedPoll.isLast()
+        );
+    }
+
+    /**
+     * Getting paginated response of polls voted by user with particular username
+     *
+     * @param username
+     * @param authUser
+     * @param page
+     * @param size
+     * @return
+     */
+    public PagedResponse<?> getAllPollsVotedByUser(String username,
+                                                     AccountUserDetails authUser,
+                                                     int page,
+                                                     int size) {
+
+        AccountUser voter = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("user", "username", username));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
+
+        Page<Long> pagedUserVotedPollIds = voteRepository.findVotedPollIdsByUserId(voter.getId(), pageable);
+
+        if (pagedUserVotedPollIds.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(),
+                    pagedUserVotedPollIds.getNumber(), pagedUserVotedPollIds.getSize(),
+                    pagedUserVotedPollIds.getTotalElements(), pagedUserVotedPollIds.getTotalPages(),
+                    pagedUserVotedPollIds.isLast());
+        }
+
+        List<Long> pollIds = pagedUserVotedPollIds.getContent();
+
+        Page<Poll> pagedPolls = pollRepository.findByIdIn(pollIds, pageable);
+
+        Map<Long, Long> choiceVoteCountMap = getChoiceToVoteCountMap(pollIds);
+        Map<Long, Long> votesByUserMap = getVotesByUserMap(pollIds, authUser.getId());
+        Map<Long, AccountUser> creatorMap = getPollCreatorMap(pagedPolls.getContent());
+
+        List<PollResponse> pollResponses = pagedPolls
+                .map(poll -> {
+                    Long currentUserSelectedChoiceForThisPoll = votesByUserMap
+                            .getOrDefault(poll.getId(), null);
+
+                    return ModelResponseMapper.mapPollToPollResponse(
+                            poll,
+                            choiceVoteCountMap,
+                            creatorMap.getOrDefault(poll.getCreatedBy(), null),
+                            currentUserSelectedChoiceForThisPoll
+                    );
+                }).getContent();
+
+        return new PagedResponse<>(
+                pollResponses,
+                pagedPolls.getNumber(),
+                pagedPolls.getSize(),
+                pagedPolls.getTotalElements(),
+                pagedPolls.getTotalPages(),
+                pagedPolls.isLast()
+        );
     }
 
 
