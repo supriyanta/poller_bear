@@ -117,9 +117,9 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
 
 - **Cast vote for a Poll** `POST /api/poll/{pollId}/vote
   - Request body
-    ```json
+    ```javascript
     {
-      "choiceId": <choice id>
+      "choiceId": <choice_id Long>
     }
     ```
   * retuns updated Poll response
