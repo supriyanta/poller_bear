@@ -64,10 +64,10 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
 
     ```javascript
     {
-        "name": <email or username>,
-        "username": <username>,
-        "email": <email>,
-        "password": <password>
+        "name": <name String>,
+        "username": <username String>,
+        "email": <email String>,
+        "password": <password String>
     }
     ```
 
@@ -75,10 +75,10 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
 
   - Request body
 
-    ```json
+    ```javascript
     {
-        "emailOrUsername": <email or username>,
-        "password": <password>
+        "emailOrUsername": <email_or_username String>,
+        "password": <password String>
     }
     ```
 
@@ -96,17 +96,17 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
 
   - Request body
 
-    ```json
+    ```javascript
     {
-        "topic": <topic of the Poll>,
+        "topic": <topic_of_the_Poll String>,
         "choices": [
-            { "text": <choice1 text> },
-            { "text": <choice2 text> },
+            { "text": <choice1_text String> },
+            { "text": <choice2_text String> },
             ...
         ],
         "duration": {
-            "days": <days>,
-            "hours": <hours>
+            "days": <days Integer>,
+            "hours": <hours Integer>
         }
     }
     ```
