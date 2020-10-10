@@ -18,7 +18,6 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
   - [Availability](#availability)
 
 <a name="setup"></a>
-
 ## Setup
 
 - Change properties in `appication.properties`
@@ -51,11 +50,9 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
   ```
 
 <a name="api_doc"></a>
-
 ## Api Documentation
 
 <a name="authentication"></a>
-
 #### Authentication
 
 - **Signup** `POST /api/signup`
@@ -85,12 +82,16 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
   - returns `Authentication Token`
 
 <a name="poll"></a>
-
 #### Poll
 
 - **All Polls** `GET /api/poll`
-
-  - returns Paginated response of all polls
+  - Request params
+      ```bash
+        page=<page_no Integer>
+        size=<page_size Integer>
+      ```
+    
+  - returns Paginated List of Polls
 
 - **Create Poll** `POST /api/poll`
 
@@ -125,15 +126,31 @@ Backend of a Polling app where a user can create poll, vote for polls, user can 
   * retuns updated Poll response
 
 <a name="user"></a>
-
 #### User
 
 - **Get User Profile** `GET /api/user/{username}`
 
   - returns User Profile of user with given username
 
-<a name="availability"></a>
+- **Get Polls created by User** `GET /api/user/{username}/polls`
+  - Request params
+      ```bash
+        page=<page_no Integer>
+        size=<page_size Integer>
+      ```
 
+  - returns Paginated List of Polls 
+  
+ - **Get Polls voted by User** `GET /api/user/{username}/votes`
+   - Request params
+       ```bash
+         page=<page_no Integer>
+         size=<page_size Integer>
+       ```
+ 
+   - returns Paginated List of Polls 
+
+<a name="availability"></a>
 #### Availability
 
 - **Get Availability of username and email** `GET /api/user/availability`
